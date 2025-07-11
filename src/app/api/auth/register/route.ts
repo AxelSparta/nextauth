@@ -6,38 +6,77 @@ export async function POST (request: Request) {
   const schema = registerUserSchema
   const body = await request.json()
 
-  try {
-    const parsedBody = schema.parse(body)
-    console.log(parsedBody)
-  } catch (error: unknown) {
-    console.log(error)
-    const errorMessage =
-      error instanceof Error ? error.message : 'Something went wrong'
+  const parsedBody = schema.safeParse(body)
+  if (!parsedBody.success) {
     return NextResponse.json(
       {
-        error: errorMessage
+        error: JSON.parse(parsedBody.error.message)
       },
       {
         status: 400
       }
     )
   }
-  const user = await prisma.user.create({
-    data: {
-      first_name: body.first_name,
-      last_name: body.last_name,
-      username: body.username,
-      email: body.email,
-      password: body.password
+
+  try {
+    const userByUsername = await prisma.user.findUnique({
+      where: {
+        username: parsedBody.data.username
+      }
+    })
+    if (userByUsername) {
+      return NextResponse.json(
+        {
+          error: 'User already exists'
+        },
+        {
+          status: 400
+        }
+      )
     }
-  })
-  return NextResponse.json(
-    {
-      message: 'user created successfully',
-      user
-    },
-    {
-      status: 201
+    const userByEmail = await prisma.user.findUnique({
+      where: {
+        email: parsedBody.data.email
+      }
+    })
+    if (userByEmail) {
+      return NextResponse.json(
+        {
+          error: 'User already exists'
+        },
+        {
+          status: 400
+        }
+      )
     }
-  )
+    const newUser = await prisma.user.create({
+      data: {
+        first_name: parsedBody.data.first_name,
+        last_name: parsedBody.data.last_name,
+        username: parsedBody.data.username,
+        email: parsedBody.data.email,
+        password: parsedBody.data.password
+      }
+    })
+    console.log(newUser)
+    return NextResponse.json(
+      {
+        message: 'User created successfully',
+        user: newUser
+      },
+      {
+        status: 201
+      }
+    )
+  } catch (error) {
+    console.log(error)
+    return NextResponse.json(
+      {
+        error: 'Something went wrong'
+      },
+      {
+        status: 500
+      }
+    )
+  }
 }

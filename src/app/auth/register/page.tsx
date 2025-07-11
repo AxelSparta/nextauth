@@ -23,6 +23,8 @@ export default function Register () {
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: '',
+      first_name: '',
+      last_name: '',
       email: '',
       password: ''
     }
@@ -54,7 +56,7 @@ export default function Register () {
                 <FormControl>
                   <Input
                     type='text'
-                    placeholder='your username...'
+                    placeholder='Enter your username...'
                     {...field}
                   />
                 </FormControl>
@@ -67,16 +69,47 @@ export default function Register () {
           />
           <FormField
             control={form.control}
+            name='first_name'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>First Name</FormLabel>
+                <FormControl>
+                  <Input
+                    type='text'
+                    placeholder='Enter your first name...'
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='last_name'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Last Name</FormLabel>
+                <FormControl>
+                  <Input
+                    type='text'
+                    placeholder='Enter your last name...'
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
             name='email'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input type='email' placeholder='your email...' {...field} />
+                  <Input type='email' placeholder='Enter your email...' {...field} />
                 </FormControl>
-                <FormDescription>
-                  This is your public display name.
-                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -90,13 +123,10 @@ export default function Register () {
                 <FormControl>
                   <Input
                     type='password'
-                    placeholder='your password...'
+                    placeholder='Enter your password...'
                     {...field}
                   />
                 </FormControl>
-                <FormDescription>
-                  This is your public display name.
-                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
